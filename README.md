@@ -5,4 +5,4 @@
 
 [![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=JuHuiHeo&theme=react)](https://github.com/anuraghazra/github-readme-stats)
 
-🥳 **This is my github blog!** >> https://heojuhuigitblog.netlify.app/
+🥳 **This is my gitblog!** >> https://heojuhuigitblog.netlify.app/

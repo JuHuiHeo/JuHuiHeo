@@ -1,0 +1,48 @@
+# 딸기 케이크 잔디 카드를 주기적으로 다시 그려서 커밋한다.
+# Redraw and commit the strawberry cake contribution card on a schedule.
+#
+# "기여가 생길 때마다"를 알려주는 이벤트는 GitHub에 없다. Actions는 이 저장소에서
+# 일어난 일만 받을 수 있어서, 짧은 주기로 확인하는 방식이 최선이다.
+# GitHub has no event for "this user contributed somewhere" - a workflow only sees
+# events in its own repository - so polling on a short schedule is the closest thing.
+name: Update contribution cake
+
+on:
+  schedule:
+    # 30분마다. 공개 저장소는 Actions 사용 시간이 무료라 비용이 들지 않는다.
+    # 기여 내용이 그대로면 스크립트가 파일을 건드리지 않아 커밋도 생기지 않는다.
+    # Every 30 minutes. Actions minutes are free on public repositories, and the
+    # script leaves the file alone when nothing changed, so no commit is made.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:        # Actions 탭에서 수동 실행 / lets you run it by hand
+
+permissions:
+  contents: write           # 다시 그린 SVG를 커밋하려면 필요 / needed to commit the redrawn SVG
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 저장소 주인의 아이디를 그대로 쓰므로 포크해도 그대로 동작한다
+      # It uses the repository owner's username, so a fork works without edits
+      - name: Draw cake.svg
+        run: python generate_cake_svg.py --user "${{ github.repository_owner }}" --out cake.svg
+
+      - name: Commit if changed
+        shell: bash
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cake.svg
+          if git diff --staged --quiet; then
+            echo "달라진 게 없어 커밋하지 않습니다 / nothing changed, skipping commit"
+          else
+            git commit -m "chore: 잔디 케이크 갱신 / update contribution cake"
+            git push
+          fi

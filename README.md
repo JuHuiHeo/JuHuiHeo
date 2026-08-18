@@ -1,4 +1,4 @@
-👻 Heo Ju Hui 👻 
+👋 Juhui Heo 
 ---
 
 🥳 **This is my gitblog!** >> https://heojuhuigitblog.netlify.app/
